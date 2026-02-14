@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 3rem 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #764ba2;
+            margin-bottom: 1rem;
+            font-family: cursive;
+        }
+
+        p {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+            font-family: cursive;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            position: relative;
+        }
+
+        .btn {
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffa8c5 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #a8a8a8 0%, #d0d0d0 100%);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .tombstone {
+            background: #000;
+            color: white;
+            padding: 2rem 3rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            width: 0%;
+            transition: width 3s ease-in-out;
+        }
+
+        .progress-bar.active {
+            width: 100%;
+        }
+
+        .floating {
+            position: absolute;
+            animation: float linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .falling {
+            position: absolute;
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .celebration {
+            color: white;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .celebration h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .celebration p {
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Initial screen -->
+        <div class="card" id="initialCard">
+            <div class="emoji">💕</div>
+            <h1>Hey Jenny...</h1>
+            <p>Will you be my Valentine? 🌹</p>
+            <div class="buttons">
+                <button class="btn btn-yes" onclick="handleYes()">Yes! 💕</button>
+                <button class="btn btn-no" id="noButton" onclick="handleNo()">No</button>
+            </div>
+        </div>
+
+        <!-- Ghosting progress screen -->
+        <div class="card hidden" id="ghostingCard">
+            <div class="emoji">👻</div>
+            <h1>Ghosting in progress...</h1>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Tombstone screen -->
+        <div class="card hidden" id="tombstoneCard">
+            <div class="emoji">💕</div>
+            <h1>Hey Jenny...</h1>
+            <div class="tombstone">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🪦</div>
+                <h2 style="font-size: 1.5rem; font-family: cursive; margin-bottom: 0.5rem;">
+                    RIP Jason & Jenny
+                </h2>
+                <p style="font-size: 1.2rem; margin: 0;">2026 - 2026</p>
+            </div>
+            <button class="btn btn-yes" onclick="handleYes()">Yes! 💕</button>
+        </div>
+
+        <!-- Celebration screen -->
+        <div class="celebration hidden" id="celebrationScreen">
+            <div class="emoji">💕</div>
+            <h1>It's official.</h1>
+            <p>Jason & Jenny, Valentine's 2026. 💕</p>
+        </div>
+    </div>
+
+    <script>
+        let noClickCount = 0;
+        const noButtonTexts = [
+            "No",
+            "Nope",
+            "Try again 😢",
+            "Not happening",
+            "Just say yes!",
+            "Nope I'm going to ghost you"
+        ];
+
+        function handleNo() {
+            const noButton = document.getElementById('noButton');
+            const card = document.getElementById('initialCard');
+            
+            if (noClickCount < noButtonTexts.length - 1) {
+                noClickCount++;
+                noButton.textContent = noButtonTexts[noClickCount];
+                
+                // Move button to random position
+                const cardRect = card.getBoundingClientRect();
+                const buttonWidth = 120;
+                const buttonHeight = 50;
+                const maxX = cardRect.width - buttonWidth - 40;
+                const maxY = cardRect.height - buttonHeight - 120; // Reduced from 40 to keep button higher
+                const randomX = Math.random() * maxX + 20;
+                const randomY = Math.random() * (maxY * 0.6) + 20; // Only use top 60% of available space
+                
+                noButton.style.position = 'absolute';
+                noButton.style.left = randomX + 'px';
+                noButton.style.top = randomY + 'px';
+            } else {
+                // Start ghosting sequence
+                startGhosting();
+            }
+        }
+
+        function startGhosting() {
+            document.getElementById('initialCard').classList.add('hidden');
+            document.getElementById('ghostingCard').classList.remove('hidden');
+            
+            // Start progress bar
+            setTimeout(() => {
+                document.getElementById('progressBar').classList.add('active');
+            }, 100);
+            
+            // Create floating ghosts
+            setTimeout(() => {
+                createGhosts();
+            }, 1500);
+            
+            // Show tombstone after 4.5 seconds
+            setTimeout(() => {
+                document.getElementById('ghostingCard').classList.add('hidden');
+                document.getElementById('tombstoneCard').classList.remove('hidden');
+            }, 4500);
+        }
+
+        function createGhosts() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 15; i++) {
+                const ghost = document.createElement('div');
+                ghost.className = 'floating';
+                ghost.textContent = '👻';
+                ghost.style.fontSize = '3rem';
+                ghost.style.left = Math.random() * 100 + '%';
+                ghost.style.animationDelay = Math.random() * 3 + 's';
+                ghost.style.animationDuration = (3 + Math.random() * 2) + 's';
+                container.appendChild(ghost);
+            }
+        }
+
+        function createHearts() {
+            const container = document.querySelector('.container');
+            const heartTypes = ['💕', '💗', '💖', '💝', '💘', '❤️', '🩷'];
+            
+            for (let i = 0; i < 50; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'falling';
+                heart.textContent = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+                heart.style.fontSize = (20 + Math.random() * 30) + 'px';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        function handleYes() {
+            // Hide all cards
+            document.getElementById('initialCard').classList.add('hidden');
+            document.getElementById('ghostingCard').classList.add('hidden');
+            document.getElementById('tombstoneCard').classList.add('hidden');
+            
+            // Show celebration
+            document.getElementById('celebrationScreen').classList.remove('hidden');
+            
+            // Create falling hearts
+            createHearts();
+        }
+    </script>
+</body>
+</html>
